@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Order a personalised digital gift</title>
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#fffaf0;--card:#fff;--ink:#3a1220;--soft:#6e4252;--line:#e8bfcb;--rose:#c93a63;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:24px 16px 48px}
+h1{font:400 clamp(1.9rem,6vw,2.6rem)/1.15 Gloock,Georgia,serif;color:var(--rose);margin:8px 0}
+.sub{color:var(--soft);margin:0 0 20px}
+fieldset{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:16px;margin:0 0 16px}
+legend{font:600 1rem Figtree,sans-serif;color:var(--rose);padding:0 8px}
+label{display:block;font-weight:600;margin:12px 0 4px}
+small{display:block;color:var(--soft);font-weight:400}
+input[type=text],input[type=date],textarea{width:100%;font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+textarea{min-height:96px;resize:vertical}
+input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:8px 0;font-weight:400}
+.opt input{margin-top:5px;accent-color:var(--rose)}
+.opt b{display:block}
+.btn{display:inline-block;border:0;background:var(--rose);color:#fff;font:600 1rem Figtree,sans-serif;padding:13px 22px;border-radius:999px;cursor:pointer;text-decoration:none;margin:6px 8px 6px 0}
+.btn.alt{background:transparent;color:var(--rose);border:2px solid var(--rose)}
+#out{display:none;margin-top:8px}
+#out textarea{min-height:260px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1 id="ttl"></h1>
+<p class="sub">Fill this in, copy your order, and send it to me on Instagram. It takes about 5 minutes, and your gift is ready within 48 hours. 💌</p>
+<form id="f" onsubmit="return false">
+<fieldset><legend>1. About the gift</legend>
+<label for="you">Your name</label><input type="text" id="you">
+<label for="for">Who is it for?</label><input type="text" id="for">
+<label for="occ">Occasion</label><input type="text" id="occ" placeholder="Birthday, anniversary…">
+<label for="date">Date you need it by</label><input type="date" id="date">
+</fieldset>
+<fieldset><legend>2. Choose your pack</legend>
+<label class="opt"><input type="radio" name="pack" value="2" checked><span><b id="p2"></b>Pick any 2 gifts</span></label>
+<label class="opt"><input type="radio" name="pack" value="5"><span><b id="p5"></b>All 5 gifts, secret-code lock screen and confetti finale</span></label>
+<div id="pick"><label>Which 2 gifts? <small>Tick two</small></label>
+<label class="opt"><input type="checkbox" name="g" value="Reasons"> Reasons</label>
+<label class="opt"><input type="checkbox" name="g" value="Playlist"> Playlist</label>
+<label class="opt"><input type="checkbox" name="g" value="Letter"> Letter</label>
+<label class="opt"><input type="checkbox" name="g" value="Scrapbook"> Scrapbook</label>
+<label class="opt"><input type="checkbox" name="g" value="Magazine"> Magazine</label></div>
+</fieldset>
+<fieldset><legend>3. Secret code</legend>
+<label for="code">4-digit code</label><input type="text" id="code" inputmode="numeric" maxlength="4" placeholder="e.g. 1402">
+<label for="hint">Hint for the code</label><input type="text" id="hint" placeholder="e.g. the day we met">
+</fieldset>
+<fieldset><legend>4. Your words</legend>
+<label for="reasons">6 reasons they are special</label><textarea id="reasons" placeholder="One per line"></textarea>
+<label for="songs">3 songs <small>Song name, artist, and a link if you have one</small></label><textarea id="songs"></textarea>
+<label for="letter">Letter <small>Write it, or share 3 memories and I will draft it</small></label><textarea id="letter"></textarea>
+<label for="mag">Magazine details <small>Their age, 5 favourite moments, 3 fun facts</small></label><textarea id="mag"></textarea>
+</fieldset>
+<fieldset><legend>5. Photos and delivery</legend>
+<p class="sub" style="margin-top:0">Send photos in the same chat after you send this: 1 for the lock screen, 1 for the magazine cover, and 4 for the scrapbook with a short caption each. Please only send photos you are happy to share.</p>
+<label class="opt"><input type="checkbox" id="qr" checked> I also want a QR code</label>
+<label for="when">Delivery date and time <small>When should I send it?</small></label><input type="text" id="when">
+</fieldset>
+<button class="btn" id="go">Make my order</button>
+</form>
+<section id="out" aria-live="polite">
+<fieldset><legend>Your order</legend>
+<textarea id="txt" readonly></textarea>
+<button class="btn" id="copy">Copy order</button>
+<a class="btn alt" id="dm" target="_blank" rel="noopener">Open Instagram</a>
+<p class="sub" id="msg"></p></fieldset>
+</section>
+</main>
+<script>
+/* ===== EDIT THIS BLOCK ===== */
+const CONFIG={brand:"Memoir Made",ig:"memoirmade.co",p2:"2-Gift Pack, ₹149",p5:"5-Gift Pack, ₹249",time:"__ hours"};
+/* ===== END ===== */
+const $=id=>document.getElementById(id);
+$("ttl").textContent=CONFIG.brand+": order your gift";
+$("p2").textContent=CONFIG.p2;$("p5").textContent=CONFIG.p5;
+const packs=document.getElementsByName("pack");
+function sync(){const two=document.querySelector('input[name=pack]:checked').value==="2";$("pick").classList.toggle("hide",!two)}
+packs.forEach(r=>r.onchange=sync);sync();
+$("dm").href=/your/.test(CONFIG.ig)?"https://www.instagram.com/":"https://ig.me/m/"+CONFIG.ig;
+$("go").onclick=()=>{
+  const v=id=>$(id).value.trim()||"-";
+  const two=document.querySelector('input[name=pack]:checked').value==="2";
+  const gifts=two?[...document.querySelectorAll('input[name=g]:checked')].map(x=>x.value).join(", ")||"-":"All 5";
+  $("txt").value=["GIFT ORDER","",
+   "From: "+v("you"),"For: "+v("for"),"Occasion: "+v("occ"),"Needed by: "+v("date"),"",
+   "Pack: "+(two?"2-Gift":"5-Gift"),"Gifts: "+gifts,"",
+   "Secret code: "+v("code"),"Hint: "+v("hint"),"",
+   "Reasons:\n"+v("reasons"),"","Songs:\n"+v("songs"),"","Letter:\n"+v("letter"),"","Magazine:\n"+v("mag"),"",
+   "QR code: "+($("qr").checked?"Yes":"No"),"Deliver on: "+v("when"),"",
+   "(I will send my photos next)"].join("\n");
+  $("out").style.display="block";$("txt").scrollIntoView({behavior:"smooth",block:"center"});
+};
+$("copy").onclick=async()=>{
+  try{await navigator.clipboard.writeText($("txt").value);$("msg").textContent="Copied! Paste it into our Instagram chat, then send your photos."}
+  catch(e){$("txt").select();$("msg").textContent="Press and hold the text, tap Copy, then paste it into our Instagram chat."}
+};
+</script>
+</body>
+</html>
